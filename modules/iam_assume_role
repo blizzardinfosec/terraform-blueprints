@@ -1,0 +1,64 @@
+# iam_assume_role Module
+
+This module creates an IAM role with a customizable trust policy to allow cross-account or federated access. Ideal for enabling secure access to AWS resources from CI/CD, automation, or third-party integrations.
+
+---
+
+## 📦 Files
+
+- `main.tf`: IAM role and trust relationship
+- `variables.tf`: Configurable trust parameters
+- `outputs.tf`: Exposed role ARN and name
+
+---
+
+## 🚀 Usage
+
+```hcl
+module "assume_role" {
+  source = "../../modules/iam_assume_role"
+
+  name               = "cross-account-access"
+  trusted_account_id = "111111111111"
+  policy_arns        = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+}
+```
+
+---
+
+## 🔧 Input Variables
+
+| Name               | Type             | Required | Description                                      |
+|--------------------|------------------|----------|--------------------------------------------------|
+| `name`             | `string`         | ✅       | Name of the IAM role                             |
+| `trusted_account_id` | `string`       | ✅       | AWS Account ID allowed to assume this role       |
+| `policy_arns`      | `list(string)`   | ❌       | List of managed policy ARNs to attach            |
+| `max_session_duration` | `number`    | ❌       | Max session time in seconds (default: 3600)      |
+
+---
+
+## 📤 Outputs
+
+| Name        | Description                        |
+|-------------|------------------------------------|
+| `role_name` | The name of the IAM role            |
+| `role_arn`  | ARN of the IAM role                |
+
+---
+
+## 🔐 Security Notes
+- Trust policy allows only the specified account to assume the role
+- Inline or managed policies can be attached
+- Consider using condition blocks for MFA or tag-based controls for extra security
+
+---
+
+## 🧠 Example
+Use with `sts:assume-role` from the trusted account:
+
+```bash
+aws sts assume-role \
+  --role-arn arn:aws:iam::222222222222:role/cross-account-access \
+  --role-session-name ci-session \
+  --profile source-account
+```
