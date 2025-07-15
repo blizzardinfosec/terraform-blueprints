@@ -1,0 +1,63 @@
+# s3_cross_account_backup Module
+
+This module configures cross-account S3 backups using IAM roles and secure bucket policies. It's ideal for backup, compliance, or DR scenarios where one AWS account writes into a bucket owned by another account.
+
+---
+
+## 📦 Files
+
+- `main.tf`: IAM role, trust policy, and bucket policy definitions
+- `variables.tf`: Input variables
+- `outputs.tf`: Useful values like ARNs and bucket names
+
+---
+
+## 🚀 Usage
+
+```hcl
+module "s3_backup" {
+  source = "../../modules/s3_cross_account_backup"
+
+  source_account_id      = "111111111111"
+  destination_account_id = "222222222222"
+  bucket_name            = "my-org-dr-backups"
+  region                 = "us-east-1"
+}
+```
+
+---
+
+## 🔧 Input Variables
+
+| Name                    | Type     | Required | Description                                           |
+|-------------------------|----------|----------|-------------------------------------------------------|
+| `source_account_id`     | `string` | ✅       | Account ID that writes backups to the destination     |
+| `destination_account_id`| `string` | ✅       | Account ID that owns the S3 bucket                    |
+| `bucket_name`           | `string` | ✅       | Name of the destination S3 bucket                     |
+| `region`                | `string` | ❌       | AWS region (defaults to provider region)             |
+
+---
+
+## 📤 Outputs
+
+| Name              | Description                               |
+|-------------------|-------------------------------------------|
+| `role_arn`        | ARN of the IAM role in source account     |
+| `bucket_arn`      | ARN of the destination S3 bucket          |
+| `bucket_policy_id`| ID of the bucket policy resource          |
+
+---
+
+## 🔐 Security Notes
+- Bucket policy limits write access to the specified role
+- Principle of least privilege is applied to IAM role and trust
+- Enable versioning + lifecycle rules outside of this module for best results
+
+---
+
+## 🧠 Example
+Backup automation in the source account can use the assumed role to push objects into the cross-account bucket securely.
+
+```bash
+aws s3 cp backup.tar.gz s3://my-org-dr-backups/ --profile assume-backup-role
+```
