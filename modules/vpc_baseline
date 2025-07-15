@@ -1,0 +1,63 @@
+# vpc_baseline Module
+
+This module provisions a secure and reusable VPC baseline with public and private subnets, NAT Gateway, route tables, and optional flow logs. It is ideal for application stacks, DevSecOps environments, and hybrid cloud infrastructure.
+
+---
+
+## 📦 Files
+
+- `main.tf`: VPC, subnets, routes, and NAT configuration
+- `variables.tf`: Customizable network settings
+- `outputs.tf`: Exported network identifiers and CIDRs
+
+---
+
+## 🚀 Usage
+
+```hcl
+module "vpc" {
+  source = "../../modules/vpc_baseline"
+
+  name            = "core-vpc"
+  cidr_block      = "10.0.0.0/16"
+  azs             = ["us-west-2a", "us-west-2b"]
+  enable_nat      = true
+  enable_flow_logs = true
+}
+```
+
+---
+
+## 🔧 Input Variables
+
+| Name              | Type              | Required | Description                                  |
+|-------------------|-------------------|----------|----------------------------------------------|
+| `name`            | `string`          | ✅       | Name prefix for VPC and related resources     |
+| `cidr_block`      | `string`          | ✅       | The CIDR block for the entire VPC             |
+| `azs`             | `list(string)`    | ✅       | Availability Zones to use for subnets         |
+| `enable_nat`      | `bool`            | ❌       | Whether to include NAT Gateway (default: true)|
+| `enable_flow_logs`| `bool`            | ❌       | Whether to enable VPC flow logs (default: false)|
+
+---
+
+## 📤 Outputs
+
+| Name                   | Description                        |
+|------------------------|------------------------------------|
+| `vpc_id`               | ID of the VPC                      |
+| `public_subnet_ids`    | List of public subnet IDs          |
+| `private_subnet_ids`   | List of private subnet IDs         |
+| `nat_gateway_ids`      | NAT Gateway IDs (if enabled)       |
+| `route_table_ids`      | Route table IDs                    |
+
+---
+
+## 🌐 Notes
+- Subnet CIDRs are derived automatically and evenly split
+- Optional Flow Logs can be enhanced with a custom log group
+- NAT Gateway incurs cost — enable only if needed
+
+---
+
+## 🧠 Example
+Use this as a secure base layer for deploying ECS, EKS, EC2, or private workloads with egress access via NAT.
