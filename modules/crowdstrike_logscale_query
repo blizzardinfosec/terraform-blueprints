@@ -1,0 +1,68 @@
+# crowdstrike_logscale_query Module
+
+This module allows you to deploy [CrowdStrike Falcon LogScale](https://www.crowdstrike.com/products/falcon-logscale/) queries using the official [CrowdStrike Terraform provider](https://registry.terraform.io/providers/CrowdStrike/crowdstrike/latest).
+
+Use this module to automate the creation of saved queries for dashboards, alerts, or long-term detection engineering.
+
+---
+
+## 📦 Files
+
+- `main.tf`: Resource definition using the CrowdStrike provider
+- `variables.tf`: Input variables
+- `outputs.tf`: Exported values
+
+---
+
+## 🚀 Usage
+
+```hcl
+module "logscale_query" {
+  source = "../../modules/crowdstrike_logscale_query"
+
+  name        = "Suspicious Okta MFA Attempts"
+  content     = <<EOT
+# Find users with multiple MFA failures within 10 minutes
+okta_logs
+| where outcome.reason = "MFA_FAILED"
+| groupBy([user.name], agg=count())
+| where count > 5
+EOT
+  description = "Flags users with more than 5 MFA failures in 10 minutes"
+  labels      = ["okta", "mfa", "suspicious"]
+}
+```
+
+---
+
+## 🔧 Input Variables
+
+| Name        | Type     | Required | Description                                        |
+|-------------|----------|----------|----------------------------------------------------|
+| `name`      | `string` | ✅       | Name of the LogScale query                         |
+| `content`   | `string` | ✅       | Query content in LogScale query language           |
+| `description` | `string` | ❌       | Description of the query                          |
+| `labels`    | `list(string)` | ❌  | List of labels/tags for the query                 |
+
+---
+
+## 📤 Outputs
+
+| Name       | Description                         |
+|------------|-------------------------------------|
+| `query_id` | The ID of the created LogScale query |
+
+---
+
+## 🧠 Note
+Ensure the CrowdStrike provider is configured and authenticated with access to the LogScale environment you're deploying to.
+
+---
+
+## ✅ Example Output
+
+```bash
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+query_id = "f94aa23c-0ad4-4302-9a92-34fd041abcd3"
