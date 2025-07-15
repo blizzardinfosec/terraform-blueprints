@@ -12,7 +12,6 @@ Welcome to the **Terraform Blueprints** repository — a curated collection of m
 | `s3_cross_account_backup`   | Enable secure S3 cross-account backups using roles and bucket policies      |
 | `vpc_baseline`              | Provision a baseline VPC with subnets, route tables, and NAT configuration |
 | `iam_assume_role`           | Create IAM roles with trust relationships for secure cross-account access   |
-| `ws1_mac_wifi_profile`      | Deploy a macOS Wi-Fi profile with SCEP and EAP-TLS config via `null_resource` |
 
 ---
 
